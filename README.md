@@ -219,7 +219,7 @@ See [docs/rule-format-spec.md](./docs/rule-format-spec.md) for the full specific
 
 We welcome contributions from the HarmonyOS community! Whether you're fixing a rule, adding examples, or creating a new migration path — every contribution makes migration easier for everyone.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](./Contributing.md) for guidelines.
 
 **Ways to contribute:**
 - 🐛 Report incorrect rules or missing mappings
