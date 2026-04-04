@@ -1,0 +1,46 @@
+---
+description: Rules for migrating Android (Kotlin/Java/Compose) code to HarmonyOS (ArkTS/ArkUI)
+globs: ["**/*.ets", "**/*.ts", "**/module.json5"]
+---
+
+# Android → HarmonyOS Migration Rules
+
+You are converting Android code to idiomatic HarmonyOS. Follow these rules.
+
+## Language: Kotlin/Java → ArkTS
+- `val`→`const`, `var`→`let` with type annotations
+- `String?`→`string | null`, `?:`→`??`, `?.`→`?.`
+- `data class`→`@Observed class` with constructor
+- `suspend fun`→`async` returning `Promise<T>`
+- `sealed class`→discriminated union (`type` field)
+- No `any` type, no extension functions, no structural typing for classes
+
+## UI: Compose/XML → ArkUI
+- `@Composable fun`→`@Component struct` with `build()` method
+- `remember { mutableStateOf() }`→`@State` decorator
+- Params→`@Prop` (one-way) or `@Link` (two-way)
+- Modifier chain→method chaining AFTER build block: `Column() { }.width('100%')`
+- `LazyColumn { items() }`→`List() { ForEach(data, builder, keyGen) }` — key generator required
+- `Button(onClick){Text()}`→`Button('label').onClick()`
+- Navigation targets need `@Entry` + `main_pages.json` registration
+
+## APIs
+- SharedPreferences→`preferences` from `@kit.ArkData` (async)
+- Room→`relationalStore` from `@kit.ArkData`
+- Retrofit/OkHttp→`http` from `@kit.NetworkKit` (destroy in finally)
+- NavController→`router` from `@kit.ArkUI`
+- `R.drawable.x`→`$r('app.media.x')`, `R.string.x`→`$r('app.string.x')`
+- Context→`common.UIAbilityContext` from `@kit.AbilityKit`
+
+## Architecture
+- Activity→UIAbility, Fragment→@Component struct
+- ViewModel→`@Observed` class, LiveData→`@State`
+- Hilt/Dagger→manual DI, Application→AbilityStage
+
+## Critical
+- Methods AFTER build block: `Column(){...}.width('100%')` ✅
+- ForEach needs key generator (3rd arg) ✅
+- No `any` type ✅
+- Destroy HTTP requests in `finally` ✅
+- No sync I/O in `build()` ✅
+- `@State` only tracks first-level — use `@Observed`+`@ObjectLink` for nested ✅
